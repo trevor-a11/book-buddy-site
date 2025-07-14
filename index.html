@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Buddy | Home</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      color: black;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+
+    header, footer {
+      padding: 1em;
+      background-color: #f0f0f0;
+    }
+
+    body.dark-mode header, body.dark-mode footer {
+      background-color: #1e1e1e;
+    }
+
+    #topBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+      background-color: #ddd;
+    }
+
+    body.dark-mode #topBar {
+      background-color: #333;
+    }
+
+    nav a {
+      margin: 0 0.5em;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5em;
+      margin-bottom: 1rem;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+    }
+
+    .strength {
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body onload="startClock()">
+  <div id="topBar">
+    <div id="clock">Loading time...</div>
+    <button onclick="toggleDarkMode()">
+      <span class="icon" id="modeIcon">🌞</span>
+      Toggle Dark Mode
+    </button>
+  </div>
+
+  <header>
+    <h1>Welcome to Book Buddy!</h1>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="recommendations.html">Recommendations</a> |
+      <a href="contact.html">Contact Us</a> |
+      <a href="Meet the Team.html">Meet the Team</a> |
+      <a href="booking.html">Book Now</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Your Personalized Reading Companion</h2>
+      <p>Book Buddy is your friendly guide to discovering great books across genres.</p>
+      <img src="https://images.squarespace-cdn.com/content/v1/56edcd4727d4bd3b884627e2/1489105715418-67XN7TMV9D9ESID61JMR/wallofbooks"
+           alt="Bookshelf" width="200" height="150">
+
+      <h2>Signup</h2>
+      <form id="registrationForm">
+        <label>Username (only letters):</label>
+        <input type="text" id="username" required>
+
+        <label>Date of Birth:</label>
+        <input type="date" id="dob" required>
+
+        <label>Phone Number (e.g. 123-456-7890):</label>
+        <input type="tel" id="phone" required>
+
+        <label>Password:</label>
+        <input type="password" id="password" required>
+        <div class="strength" id="strengthMessage"></div>
+
+        <label>Confirm Password:</label>
+        <input type="password" id="confirmPassword" required>
+
+        <label>Select Account Type:</label>
+        <select id="accountType" required>
+          <option value="">-- Select --</option>
+          <option value="farmer">Farmer</option>
+          <option value="student">Student</option>
+          <option value="vendor">Vendor</option>
+        </select>
+
+        <button type="submit">Register</button>
+        <div class="error" id="errorMessage"></div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Book Buddy. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function startClock() {
+      function updateClock() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        const dateString = now.toLocaleDateString();
+        document.getElementById('clock').innerHTML = `${dateString} ${timeString}`;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    function toggleDarkMode() {
+      const body = document.body;
+      body.classList.toggle('dark-mode');
+      const modeIcon = document.getElementById('modeIcon');
+      modeIcon.textContent = body.classList.contains('dark-mode') ? '🌙' : '🌞';
+    }
+
+    // Validation Logic
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const dob = new Date(document.getElementById('dob').value);
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const accountType = document.getElementById('accountType').value;
+      const errorMessage = document.getElementById('errorMessage');
+
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      const usernameValid = /^[A-Za-z]+$/.test(username);
+      const phoneValid = /^\d{3}-\d{3}-\d{4}$/.test(phone);
+      const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+
+      errorMessage.innerText = '';
+
+      if (!usernameValid) {
+        errorMessage.innerText = 'Username must contain only letters with no spaces or numbers.';
+        return;
+      }
+
+      if (isNaN(dob) || age < 18) {
+        errorMessage.innerText = 'You must be at least 18 years old.';
+        return;
+      }
+
+      if (!phoneValid) {
+        errorMessage.innerText = 'Enter a valid phone number (e.g. 123-456-7890).';
+        return;
+      }
+
+      if (!strongPassword) {
+        errorMessage.innerText = 'Password must include uppercase, lowercase, number, and special character.';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorMessage.innerText = 'Passwords do not match.';
+        return;
+      }
+
+      if (!accountType) {
+        errorMessage.innerText = 'Please select an account type.';
+        return;
+      }
+
+      alert(`You have successfully registered as a ${accountType}.`);
+    });
+
+    // Bonus: Password Strength Meter
+    document.getElementById('password').addEventListener('input', function() {
+      const value = this.value;
+      const strengthMessage = document.getElementById('strengthMessage');
+
+      if (value.length < 6) {
+        strengthMessage.innerText = 'Weak password';
+        strengthMessage.style.color = 'red';
+      } else if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(value)) {
+        strengthMessage.innerText = 'Moderate';
+        strengthMessage.style.color = 'orange';
+      }
+
+      if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(value)) {
+        strengthMessage.innerText = 'Strong password';
+        strengthMessage.style.color = 'green';
+      }
+    });
+  </script>
+</body>
+</html>
